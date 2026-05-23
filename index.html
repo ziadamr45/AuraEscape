@@ -1541,6 +1541,11 @@ const CFG={
   dailyStreak:S.g('dailyStreak',0),
   dailyLast:S.g('dailyLast',0),
   achievements:S.g('achievements',[]),
+  totalDist:S.g('totalDist',0),
+  totalCoinsWeek:S.g('totalCoinsWeek',0),
+  runsWeek:S.g('runsWeek',0),
+  comboWeek:S.g('comboWeek',0),
+  weekNum:S.g('weekNum',0),
 };
 function saveCFG(){
   S.s('lang',CFG.lang);S.s('sound',CFG.sound);S.s('vib',CFG.vib);S.s('hq',CFG.hq);
@@ -1551,6 +1556,11 @@ function saveCFG(){
   S.s('tutDone',CFG.tutDone||false);S.s('dailyDone',CFG.dailyDone||0);
   S.s('dailyStreak',CFG.dailyStreak||0);S.s('dailyLast',CFG.dailyLast||0);
   S.s('achievements',CFG.achievements||[]);
+  S.s('loginStreak',CFG.loginStreak||0);S.s('lastLogin',CFG.lastLogin||0);
+  S.s('totalXP',CFG.totalXP||0);S.s('passXP',CFG.passXP||0);
+  S.s('storyDone',CFG.storyDone||[]);S.s('chaserType',CFG.chaserType||'officer');
+  S.s('totalDist',CFG.totalDist||0);S.s('weeklyCoins',CFG.weeklyCoins||0);
+  S.s('weeklyRuns',CFG.weeklyRuns||0);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2404,7 +2414,7 @@ function starStr(n,f='⭐',e='☆'){return f.repeat(n)+e.repeat(3-n);}
 /* ═══════════════════════════════════════════════════════════
    COLLISION
 ═══════════════════════════════════════════════════════════ */
-function checkCol(){
+function checkCol(){if(GS.ghostMode)return;
   const px=playerGroup.position.x,py=playerGroup.position.y,pz=playerGroup.position.z;
 
   // Coins
@@ -2450,7 +2460,7 @@ function checkCol(){
   
   // Combo timer
   if(GS.combo>0){
-    GS.comboTimer-=1/60;
+    GS.comboTimer-=dt;
     if(GS.comboTimer<=0){GS.combo=0;updateComboHUD();}
   }
   // Perfect run: chaser backs off slightly when combo is high
@@ -2525,7 +2535,8 @@ function doComplete(){
   const coinTarget=L.target;
   const extraCoins=Math.max(0, GS.coins - coinTarget);
   // 1 نجمة = وصلت الـ target، 2 نجمة = +50%، 3 نجمة = +100%
-  const st = GS.coins >= coinTarget*2 ? 3 : GS.coins >= coinTarget*1.5 ? 2 : 1;
+  const coinTarget=L.target;
+  const st = GS.coins >= coinTarget*2 ? 3 : GS.coins >= coinTarget*1.5 ? 2 : GS.coins >= coinTarget ? 1 : 0;
 
   // Bonus score
   let bonus=0,grade='C';
@@ -2539,10 +2550,10 @@ function doComplete(){
   if(!CFG.best[lid]||finalScore>CFG.best[lid])CFG.best[lid]=finalScore;
   if(!CFG.stars[lid]||st>CFG.stars[lid])CFG.stars[lid]=st;
   if(GS.curLevel+2<=LEVELS.length&&CFG.unlocked<GS.curLevel+2)CFG.unlocked=GS.curLevel+2;
-  CFG.totalCoins=(CFG.totalCoins||0)+GS.coins;
+  CFG.totalCoins=(CFG.totalCoins||0)+GS.coins;CFG.totalCoinsWeek=(CFG.totalCoinsWeek||0)+GS.coins;
   CFG.levelsDone=(CFG.levelsDone||0)+1;
-  CFG.totalRuns=(CFG.totalRuns||0)+1;
-  CFG.bestCombo=Math.max(CFG.bestCombo||0,GS.combo);
+  CFG.totalRuns=(CFG.totalRuns||0)+1;CFG.runsWeek=(CFG.runsWeek||0)+1;
+  CFG.bestCombo=Math.max(CFG.bestCombo||0,GS.combo);CFG.comboWeek=Math.max(CFG.comboWeek||0,GS.combo);
   saveCFG();
 
   document.getElementById('btnpause').classList.remove('show');
@@ -2980,19 +2991,32 @@ document.getElementById('tutSkip').onclick=(e)=>{e.stopPropagation();CFG.tutDone
 /* ═══════════════════════════════════════════════════════════
    MAIN LOOP
 ═══════════════════════════════════════════════════════════ */
+
+function checkWeeklyReset(){
+  const currentWeek=Math.floor(Date.now()/(86400000*7));
+  if(!CFG.weekNum||CFG.weekNum!==currentWeek){
+    CFG.weekNum=currentWeek;
+    CFG.totalCoinsWeek=0;
+    CFG.runsWeek=0;
+    CFG.comboWeek=0;
+    saveCFG();
+  }
+}
+checkWeeklyReset();
+
 let lastT=0;
 function loop(ts){
   requestAnimationFrame(loop);
-  const dt=Math.min((ts-lastT)*.001,.05);lastT=ts;
+  let dt=Math.min((ts-lastT)*.001,.05);lastT=ts;if(GS.slowmoActive)dt*=0.35;
 
   if(GS.state==='play'){
     GS.frame++;GS.elapsed+=dt;
 
     // Speed ramp — faster over time
-    const rampRate=.8+GS.curLevel*.015;
+    const diffMod=DD.getDifficultyMod();const rampRate=(.8+GS.curLevel*.015)*diffMod;
     const tSpd=Math.min(LEVELS[GS.curLevel].max, LEVELS[GS.curLevel].spd+Math.floor(GS.elapsed/8)*rampRate);
     // Speed boost powerup: +40% سرعة مؤقتاً
-    const slowmoMult = GS.slowmoActive ? 0.35 : 1.0;
+    const slowmoMult = 1.0; // Slow-mo now handled via dt multiplier
     const boostMult = (GS.speedBoost ? 1.4 : 1.0) * slowmoMult * (GS.vehicleActive && GS.vehicleType ? VEHICLES[GS.vehicleType].speed : 1.0);
     GS.speed+=(tSpd*boostMult-GS.speed)*.016;
 
@@ -3688,7 +3712,7 @@ function startCoinRain(){
     div.style.top='-30px';
     document.body.appendChild(div);
     // Collect + score
-    GS.coins+=1;GS.score+=15;
+    const cm=getCoinMult();GS.coins+=1*cm;GS.score+=15*cm;
     setTimeout(()=>div.remove(),1400);
   },150);
 }
@@ -4539,6 +4563,10 @@ function claimDailyReward() {
     if(!CFG.shopOwned) CFG.shopOwned = [];
     CFG.shopOwned.push('skateboard');
     showToast('🛹 Skateboard unlocked!');
+  } else if(reward.type === 'ability') {
+    // Grant a free ability use (reduce cooldown of all abilities)
+    Object.values(ABILITIES).forEach(ab => { ab.cdTimer = 0; });
+    showToast(CFG.lang==='ar' ? '⚡ القدرات جاهزة!' : '⚡ Abilities ready!');
   }
   saveCFG();
 }
@@ -4635,7 +4663,7 @@ function getWeeklyMission() {
 function updateWeeklyBanner() {
   const wm = getWeeklyMission();
   const ar = CFG.lang === 'ar';
-  const progress = Math.min(wm.target, CFG[wm.key] || 0);
+  const progress = Math.min(wm.target, CFG[wm.key] || GS[wm.key] || 0);
   document.getElementById('weeklyText').textContent = `📅 ${ar?'أسبوعي: '+wm.ar:'Weekly: '+wm.en}`;
   document.getElementById('weeklyProgress').textContent = progress + '/' + wm.target;
   document.getElementById('weeklyBanner').classList.toggle('show', GS.state==='play');
@@ -4747,9 +4775,7 @@ window.updateEvents = function(dt) {
   updateWeeklyBanner();
   
   // Slow-mo effect on game speed
-  if(GS.slowmoActive) {
-    // Already handled by multiplying dt — done via patching speed
-  }
+  // Slow-mo is now handled globally via dt multiplier in main loop
 };
 
 // Patch trySpawnEvent
