@@ -820,11 +820,7 @@ body.lang-en .lc-lock{left:3px}
   min-height:2.5em}
 .ls-bar-bg{width:180px;height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
 .ls-bar{height:100%;background:linear-gradient(90deg,var(--c1),var(--c3));
-  border-radius:3px;width:0%;
-  animation:lsBarFill 3s ease-in-out forwards}
-@keyframes lsBarFill{
-  0%{width:0%}25%{width:30%}50%{width:55%}75%{width:75%}90%{width:85%}100%{width:90%}
-}
+  border-radius:3px;width:0%;transition:width .3s ease}
 .ls-pct{font-size:.6rem;color:var(--text2);font-weight:800}
 
 /* ═══ BOSS ZONE ALERT ═══ */
@@ -1182,9 +1178,8 @@ body.a11y-colorblind .hc-val{filter:none}
 
 <!-- SETTINGS ENHANCED -->
 
-<!-- Three.js with CDN fallbacks -->
-<script>function __loadThree(){var s=document.createElement('script');s.src='https://unpkg.com/three@0.128.0/build/three.min.js';s.onerror=function(){var j=document.createElement('script');j.src='https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';j.onerror=function(){var p=document.getElementById('lsPct');if(p){p.textContent='Error loading 3D — refresh page';p.style.color='#ef4444';}};document.head.appendChild(j);};document.head.appendChild(s);}</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="__loadThree()"></script>
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <!-- STORY MODE SCREEN -->
 <div class="scr off" id="scrStory">
@@ -3741,12 +3736,14 @@ function showLoadingScreen(){
   const ar=CFG.lang==='ar';
   const tips=ar?LOAD_TIPS_AR:LOAD_TIPS_EN;
   tip.textContent=tips[Math.floor(Math.random()*tips.length)];
-  // Stop CSS animation and complete to 100%
-  bar.style.animation='none';
-  bar.style.width='100%';
-  bar.style.transition='width .4s ease';
-  pct.textContent='100%';
-  setTimeout(()=>{ls.style.opacity='0';ls.style.transition='opacity .5s';setTimeout(()=>{ls.style.display='none';},500);},500);
+  ls.style.display='flex';
+  let p=0;
+  const iv=setInterval(()=>{
+    p+=Math.random()*18+5;
+    if(p>=100){p=100;clearInterval(iv);setTimeout(()=>{ls.style.opacity='0';ls.style.transition='opacity .5s';setTimeout(()=>{ls.style.display='none';},500);},200);}
+    bar.style.width=p+'%';
+    pct.textContent=Math.floor(p)+'%';
+  },80);
 }
 
 /* ═══════════════════════════════════════════════════════════
