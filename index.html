@@ -918,7 +918,7 @@ body.a11y-colorblind .hc-val{filter:none}
 <div id="missionHud"><div class="mh-title">مهمة اليوم</div><div class="mh-task" id="mhTask">—</div><div class="mh-bar-bg"><div class="mh-bar" id="mhBar"></div></div><div class="mh-pct" id="mhPct">0%</div></div>
 
 <!-- STREAK DISPLAY -->
-<div id="streakDisplay"></div>
+<div id="streakDisplay" id="streakDisp"></div>
 
 <!-- HUD -->
 <div id="hud">
@@ -1210,7 +1210,7 @@ body.a11y-colorblind .hc-val{filter:none}
 <div id="ghostOverlay"></div>
 
 <!-- ABILITY BAR -->
-<div id="abilityBar" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()">
+<div id="abilityBar">
   <div class="ability-btn" id="ab-dash" onclick="useAbility('dash')" title="Dash">
     <div class="ability-icon">💨</div>
     <div class="ability-key">Q</div>
@@ -1541,26 +1541,12 @@ const CFG={
   dailyStreak:S.g('dailyStreak',0),
   dailyLast:S.g('dailyLast',0),
   achievements:S.g('achievements',[]),
-  totalDist:S.g('totalDist',0),
-  totalCoinsWeek:S.g('totalCoinsWeek',0),
-  runsWeek:S.g('runsWeek',0),
-  comboWeek:S.g('comboWeek',0),
-  weekNum:S.g('weekNum',0),
 };
 function saveCFG(){
   S.s('lang',CFG.lang);S.s('sound',CFG.sound);S.s('vib',CFG.vib);S.s('hq',CFG.hq);
   S.s('unlocked',CFG.unlocked);S.s('best',CFG.best);S.s('stars',CFG.stars);
   S.s('totalCoins',CFG.totalCoins||0);S.s('levelsDone',CFG.levelsDone||0);
   S.s('totalRuns',CFG.totalRuns||0);S.s('bestCombo',CFG.bestCombo||0);
-  S.s('shopOwned',CFG.shopOwned||[]);S.s('shopEquipped',CFG.shopEquipped||{});
-  S.s('tutDone',CFG.tutDone||false);S.s('dailyDone',CFG.dailyDone||0);
-  S.s('dailyStreak',CFG.dailyStreak||0);S.s('dailyLast',CFG.dailyLast||0);
-  S.s('achievements',CFG.achievements||[]);
-  S.s('loginStreak',CFG.loginStreak||0);S.s('lastLogin',CFG.lastLogin||0);
-  S.s('totalXP',CFG.totalXP||0);S.s('passXP',CFG.passXP||0);
-  S.s('storyDone',CFG.storyDone||[]);S.s('chaserType',CFG.chaserType||'officer');
-  S.s('totalDist',CFG.totalDist||0);S.s('weeklyCoins',CFG.weeklyCoins||0);
-  S.s('weeklyRuns',CFG.weeklyRuns||0);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1628,14 +1614,15 @@ function mkLvls(){
       const distKm = Math.round((2 + diff * 0.13) * 10) / 10;
       // 2) نجوم — تبدأ 15 وتوصل 80
       const starsTarget = Math.round(15 + diff * 0.65);
-      // 3) عملات — منحنى معقول (خطي)
-      const coinTarget = 50 + diff * 50;
+      // 3) عملات — الأسية اللي اتحسبت
+      const COIN_R = 1.0604;
+      const coinTarget = Math.round(3000 * Math.pow(COIN_R, diff));
 
       // ━━━ عملات مطلوبة لفتح الـ zone التالية ━━━
       const zoneCoinReq = (() => {
         if(lInZone !== 4) return 0;
         let s = 0;
-        for(let j=zi*5; j<zi*5+5; j++) s += (50 + j * 50);
+        for(let j=zi*5; j<zi*5+5; j++) s += Math.round(3000*Math.pow(COIN_R,j));
         return Math.round(s * 0.70);
       })();
       
@@ -2413,7 +2400,7 @@ function starStr(n,f='⭐',e='☆'){return f.repeat(n)+e.repeat(3-n);}
 /* ═══════════════════════════════════════════════════════════
    COLLISION
 ═══════════════════════════════════════════════════════════ */
-function checkCol(){if(GS.ghostMode)return;
+function checkCol(){
   const px=playerGroup.position.x,py=playerGroup.position.y,pz=playerGroup.position.z;
 
   // Coins
@@ -2459,7 +2446,7 @@ function checkCol(){if(GS.ghostMode)return;
   
   // Combo timer
   if(GS.combo>0){
-    GS.comboTimer-=dt;
+    GS.comboTimer-=1/60;
     if(GS.comboTimer<=0){GS.combo=0;updateComboHUD();}
   }
   // Perfect run: chaser backs off slightly when combo is high
@@ -2534,8 +2521,7 @@ function doComplete(){
   const coinTarget=L.target;
   const extraCoins=Math.max(0, GS.coins - coinTarget);
   // 1 نجمة = وصلت الـ target، 2 نجمة = +50%، 3 نجمة = +100%
-  const coinTarget=L.target;
-  const st = GS.coins >= coinTarget*2 ? 3 : GS.coins >= coinTarget*1.5 ? 2 : GS.coins >= coinTarget ? 1 : 0;
+  const st = GS.coins >= coinTarget*2 ? 3 : GS.coins >= coinTarget*1.5 ? 2 : 1;
 
   // Bonus score
   let bonus=0,grade='C';
@@ -2549,20 +2535,10 @@ function doComplete(){
   if(!CFG.best[lid]||finalScore>CFG.best[lid])CFG.best[lid]=finalScore;
   if(!CFG.stars[lid]||st>CFG.stars[lid])CFG.stars[lid]=st;
   if(GS.curLevel+2<=LEVELS.length&&CFG.unlocked<GS.curLevel+2)CFG.unlocked=GS.curLevel+2;
-  CFG.totalCoins=(CFG.totalCoins||0)+GS.coins;CFG.totalCoinsWeek=(CFG.totalCoinsWeek||0)+GS.coins;
+  CFG.totalCoins=(CFG.totalCoins||0)+GS.coins;
   CFG.levelsDone=(CFG.levelsDone||0)+1;
-  CFG.totalRuns=(CFG.totalRuns||0)+1;CFG.runsWeek=(CFG.runsWeek||0)+1;
-  CFG.bestCombo=Math.max(CFG.bestCombo||0,GS.combo);CFG.comboWeek=Math.max(CFG.comboWeek||0,GS.combo);
-  // Track story chapter completion
-  if(typeof STORY_CHAPTERS!=='undefined'){
-    if(!CFG.storyDone)CFG.storyDone=[];
-    STORY_CHAPTERS.forEach(ch=>{
-      if(GS.curLevel+1>=ch.level+1&&!CFG.storyDone.includes(ch.id)){
-        CFG.storyDone.push(ch.id);
-        showToast((CFG.lang==='ar'?'📖 فصل مكتمل: ':'📖 Chapter complete: ')+(CFG.lang==='ar'?ch.ar:ch.en));
-      }
-    });
-  }
+  CFG.totalRuns=(CFG.totalRuns||0)+1;
+  CFG.bestCombo=Math.max(CFG.bestCombo||0,GS.combo);
   saveCFG();
 
   document.getElementById('btnpause').classList.remove('show');
@@ -2805,7 +2781,7 @@ function vib(p){if(CFG.vib&&navigator.vibrate)navigator.vibrate(p);}
 /* ═══════════════════════════════════════════════════════════
    UI HELPERS
 ═══════════════════════════════════════════════════════════ */
-const SCRIDS=['scrStart','scrLvl','scrSet','scrPause','scrDeath','scrDone','scrZoneGate','scrShop','scrLeader','scrDaily','scrPass'];
+const SCRIDS=['scrStart','scrLvl','scrSet','scrPause','scrDeath','scrDone','scrZoneGate','scrShop','scrLeader','scrDaily'];
 function showScr(id){
   SCRIDS.forEach(s=>{
     const el=document.getElementById(s);
@@ -2820,11 +2796,8 @@ function doFlash(c){flashEl.style.background=c;flashEl.style.opacity='.88';setTi
 function doCoinPop(){
   const el=document.createElement('div');
   el.className='cpop';
-  const cm=getCoinMult();const coinVal=Math.round(8*cm);
-  el.textContent=GS.combo>1?`+${coinVal}(x${GS.combo})`:`+${coinVal}`;
+  el.textContent=GS.combo>1?'+'+8*GS.combo+'(x'+GS.combo+')':'+8';
   el.style.top=(innerHeight*.3)+'px';
-  const pan=(playerGroup.position.x)/3; // -1 to 1 based on lane
-  playSpatialSound(880,.08,pan,.06);
   document.body.appendChild(el);setTimeout(()=>el.remove(),800);
 }
 
@@ -2905,11 +2878,6 @@ function buildGrid(){
 ═══════════════════════════════════════════════════════════ */
 function applyLang(){
   const ar=CFG.lang==='ar';
-  // Rebuild dynamic screens on language change
-  try{buildDailyScreen();}catch(e){}
-  try{buildStoryScreen();}catch(e){}
-  try{buildLeaderboard();}catch(e){}
-  try{if(document.getElementById('shopGrid'))buildShopGrid();}catch(e){}
   document.documentElement.lang=CFG.lang;
   document.body.className=ar?'lang-ar':'lang-en';
   document.getElementById('gnAr').classList.toggle('off',!ar);
@@ -2960,9 +2928,9 @@ document.getElementById('rowHQ').onclick=()=>{
   renderer.setPixelRatio(CFG.hq?Math.min(devicePixelRatio,2):Math.min(devicePixelRatio,1.5));
 };
 document.getElementById('btnReset').onclick=()=>{
-  customConfirm(CFG.lang==='ar'?'مسح كل التقدم؟':'Reset all progress?',()=>{
+  if(confirm(CFG.lang==='ar'?'مسح كل التقدم؟':'Reset all progress?')){
     CFG.unlocked=1;CFG.best={};CFG.stars={};saveCFG();applyLang();
-  });
+  }
 };
 document.getElementById('btnpause').onclick=doPause;
 document.getElementById('btnResume').onclick=doResume;
@@ -3001,145 +2969,26 @@ document.getElementById('btnStartDaily').onclick=()=>{startGame(0);};
 // Revive
 document.getElementById('btnReviveAd').onclick=doReviveWithAd;
 document.getElementById('btnReviveSkip').onclick=()=>{hideRevive();doActualDie();};
-document.getElementById('btnReviveCoins').onclick=()=>{
-  if((CFG.totalCoins||0)>=200){
-    CFG.totalCoins-=200;saveCFG();
-    hideRevive();
-    _rvUsed=true;
-    GS.state='play';GS.shield=true;GS.shieldT=3;
-    shieldMesh.visible=true;
-    doFlash('rgba(56,217,248,.7)');snd('shield');vib([40,20,40]);
-    showToast(CFG.lang==='ar'?'✨ انعاش! درع لـ 3 ثوانٍ':'✨ Revived! Shield for 3s');
-    document.getElementById('btnpause').classList.add('show');
-  } else {
-    showToast(CFG.lang==='ar'?'🪙 عملات مش كافية (محتاج 200)':'🪙 Not enough coins (need 200)');
-  }
-};
 // Tutorial tap
 document.getElementById('tutorial').addEventListener('click',()=>nextTutStep());
 document.getElementById('tutSkip').onclick=(e)=>{e.stopPropagation();CFG.tutDone=true;saveCFG();document.getElementById('tutorial').classList.remove('show');};
 
-
-// Custom confirm dialog
-function customConfirm(msg, onYes){
-  const el=document.getElementById('customConfirm');
-  document.getElementById('ccMsg').textContent=msg;
-  el.classList.remove('off');
-  el.style.display='flex';
-  const yesBtn=document.getElementById('ccYes');
-  const noBtn=document.getElementById('ccNo');
-  const cleanup=()=>{
-    el.style.display='none';el.classList.add('off');
-    yesBtn.replaceWith(yesBtn.cloneNode(true));
-    noBtn.replaceWith(noBtn.cloneNode(true));
-  };
-  document.getElementById('ccYes').onclick=()=>{cleanup();onYes();};
-  document.getElementById('ccNo').onclick=cleanup;
-}
-
-// Auto quality adjustment based on FPS
-let _fpsSamples=[],_lastFpsCheck=0;
-function autoAdjustQuality(){
-  const now=performance.now();
-  _fpsSamples.push(now);
-  // Keep only last 60 samples
-  while(_fpsSamples.length>60)_fpsSamples.shift();
-  if(_fpsSamples.length<30)return;
-  const avgFrame=(_fpsSamples[_fpsSamples.length-1]-_fpsSamples[0])/(_fpsSamples.length-1);
-  const fps=1000/avgFrame;
-  if(fps<25&&!CFG.hq){
-    renderer.setPixelRatio(Math.min(devicePixelRatio,0.75));
-    scene.fog.near=25;scene.fog.far=70;
-  } else if(fps>50&&!CFG.hq){
-    renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-    scene.fog.near=38;scene.fog.far=108;
-  }
-}
-
-// Export/Import save data
-function exportSaveData(){
-  const data={};
-  Object.keys(CFG).forEach(k=>{data[k]=CFG[k];});
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='aura_escape_save.json';a.click();
-  URL.revokeObjectURL(url);
-  showToast(CFG.lang==='ar'?'💾 تم تصدير البيانات!':'💾 Data exported!');
-}
-function importSaveData(){
-  const input=document.createElement('input');input.type='file';input.accept='.json';
-  input.onchange=e=>{
-    const file=e.target.files[0];if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      try{
-        const data=JSON.parse(ev.target.result);
-        Object.keys(data).forEach(k=>{if(k in CFG)CFG[k]=data[k];});
-        saveCFG();applyLang();
-        showToast(CFG.lang==='ar'?'💾 تم استيراد البيانات!':'💾 Data imported!');
-      }catch(err){showToast(CFG.lang==='ar'?'❌ ملف غير صالح':'❌ Invalid file');}
-    };reader.readAsText(file);
-  };input.click();
-}
-
-// Accessibility: Add ARIA labels to game elements
-function initA11y(){
-  const canvas = document.querySelector('canvas');
-  if(canvas){canvas.setAttribute('role','application');canvas.setAttribute('aria-label',CFG.lang==='ar'?'لعبة هروب أورا - استخدم الأسهم أو السحب للتحكم':'Aura Escape game - Use arrows or swipe to control');}
-  document.getElementById('abilityBar')?.setAttribute('role','toolbar');
-  document.getElementById('abilityBar')?.setAttribute('aria-label',CFG.lang==='ar'?'شريط القدرات':'Ability bar');
-  document.querySelectorAll('.ability-btn').forEach((btn,i)=>{
-    const names=['Dash','Ghost','Slow-Mo','Double Jump','Shield'];
-    btn.setAttribute('aria-label',names[i]||'Ability');
-    btn.setAttribute('role','button');
-  });
-}
-
-// Spatial audio: Pan sounds based on object position
-let audioCtxSpatial=null;
-function playSpatialSound(freq,dur,pan=0,vol=.08){
-  try{
-    if(!audioCtxSpatial)audioCtxSpatial=new(window.AudioContext||window.webkitAudioContext)();
-    const osc=audioCtxSpatial.createOscillator();
-    const gain=audioCtxSpatial.createGain();
-    const panner=audioCtxSpatial.createStereoPanner();
-    osc.frequency.value=freq;osc.type='sine';
-    gain.gain.setValueAtTime(vol,audioCtxSpatial.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.001,audioCtxSpatial.currentTime+dur);
-    panner.pan.value=Math.max(-1,Math.min(1,pan));
-    osc.connect(gain);gain.connect(panner);panner.connect(audioCtxSpatial.destination);
-    osc.start();osc.stop(audioCtxSpatial.currentTime+dur);
-  }catch(e){}
-}
 /* ═══════════════════════════════════════════════════════════
    MAIN LOOP
 ═══════════════════════════════════════════════════════════ */
-
-function checkWeeklyReset(){
-  const currentWeek=Math.floor(Date.now()/(86400000*7));
-  if(!CFG.weekNum||CFG.weekNum!==currentWeek){
-    CFG.weekNum=currentWeek;
-    CFG.totalCoinsWeek=0;
-    CFG.runsWeek=0;
-    CFG.comboWeek=0;
-    saveCFG();
-  }
-}
-checkWeeklyReset();
-
 let lastT=0;
 function loop(ts){
   requestAnimationFrame(loop);
-  let dt=Math.min((ts-lastT)*.001,.05);lastT=ts;if(GS.slowmoActive)dt*=0.35;
+  const dt=Math.min((ts-lastT)*.001,.05);lastT=ts;
 
   if(GS.state==='play'){
-    GS.frame++;GS.elapsed+=dt;if(GS.frame%60===0)autoAdjustQuality();
+    GS.frame++;GS.elapsed+=dt;GS.totalDist+=GS.speed*dt;
 
     // Speed ramp — faster over time
-    const diffMod=DD.getDifficultyMod();const rampRate=(.8+GS.curLevel*.015)*diffMod;
+    const rampRate=.8+GS.curLevel*.015;
     const tSpd=Math.min(LEVELS[GS.curLevel].max, LEVELS[GS.curLevel].spd+Math.floor(GS.elapsed/8)*rampRate);
     // Speed boost powerup: +40% سرعة مؤقتاً
-    const slowmoMult = 1.0; // Slow-mo now handled via dt multiplier
+    const slowmoMult = GS.slowmoActive ? 0.35 : 1.0;
     const boostMult = (GS.speedBoost ? 1.4 : 1.0) * slowmoMult * (GS.vehicleActive && GS.vehicleType ? VEHICLES[GS.vehicleType].speed : 1.0);
     GS.speed+=(tSpd*boostMult-GS.speed)*.016;
 
@@ -3245,10 +3094,7 @@ function loop(ts){
     updateHUD();
   }
 
-  // Only render when needed — skip full render in menus to save battery
-  if(GS.state==='play'||GS.state==='dead'||GS.state==='complete'||GS.state==='pause'){
-    renderer.render(scene,camera);
-  }
+  renderer.render(scene,camera);
 }
 
 
@@ -3763,7 +3609,7 @@ function triggerSlowMo(duration=1.2){
   },duration*1000);
 }
 function updateSlowMo(dt){
-  if(_slowMoActive) return dt*0.28; // 28% speed = dramatic slow when active
+  if(!_slowMoActive)return dt*0.28; // 28% speed = dramatic slow
   return dt;
 }
 
@@ -3838,7 +3684,7 @@ function startCoinRain(){
     div.style.top='-30px';
     document.body.appendChild(div);
     // Collect + score
-    const cm=getCoinMult();GS.coins+=1*cm;GS.score+=15*cm;
+    GS.coins+=1;GS.score+=15;
     setTimeout(()=>div.remove(),1400);
   },150);
 }
@@ -4417,10 +4263,10 @@ function defeatBoss() {
    5. ADVANCED CHASE SYSTEM (Police Dogs, Drones, Cars)
 ═══════════════════════════════════════════════════════════ */
 const CHASER_TYPES = {
-  officer: { id:'officer', icon:'👮', label:'Officer',   labelAr:'ضابط',      speed:0.4, catchDist:1.5,  color:0x1d4ed8 },
-  dog:     { id:'dog',     icon:'🐕', label:'K9 Dog',    labelAr:'كلب بوليسي', speed:0.65, catchDist:1.0, color:0xd97706 },
-  drone:   { id:'drone',   icon:'🚁', label:'Drone',     labelAr:'درون',       speed:0.5, catchDist:2.0,  color:0x6b7280 },
-  car:     { id:'car',     icon:'🚔', label:'Police Car',labelAr:'سيارة بوليس', speed:0.3, catchDist:0.5, color:0xdc2626 },
+  officer: { icon:'👮', label:'Officer',   labelAr:'ضابط',      speed:0.4, catchDist:1.5,  color:0x1d4ed8 },
+  dog:     { icon:'🐕', label:'K9 Dog',    labelAr:'كلب بوليسي', speed:0.65, catchDist:1.0, color:0xd97706 },
+  drone:   { icon:'🚁', label:'Drone',     labelAr:'درون',       speed:0.5, catchDist:2.0,  color:0x6b7280 },
+  car:     { icon:'🚔', label:'Police Car',labelAr:'سيارة بوليس', speed:0.3, catchDist:0.5, color:0xdc2626 },
 };
 
 function switchChaserType(type) {
@@ -4689,10 +4535,6 @@ function claimDailyReward() {
     if(!CFG.shopOwned) CFG.shopOwned = [];
     CFG.shopOwned.push('skateboard');
     showToast('🛹 Skateboard unlocked!');
-  } else if(reward.type === 'ability') {
-    // Grant a free ability use (reduce cooldown of all abilities)
-    Object.values(ABILITIES).forEach(ab => { ab.cdTimer = 0; });
-    showToast(CFG.lang==='ar' ? '⚡ القدرات جاهزة!' : '⚡ Abilities ready!');
   }
   saveCFG();
 }
@@ -4789,7 +4631,7 @@ function getWeeklyMission() {
 function updateWeeklyBanner() {
   const wm = getWeeklyMission();
   const ar = CFG.lang === 'ar';
-  const progress = Math.min(wm.target, CFG[wm.key] || GS[wm.key] || 0);
+  const progress = Math.min(wm.target, CFG[wm.key] || 0);
   document.getElementById('weeklyText').textContent = `📅 ${ar?'أسبوعي: '+wm.ar:'Weekly: '+wm.en}`;
   document.getElementById('weeklyProgress').textContent = progress + '/' + wm.target;
   document.getElementById('weeklyBanner').classList.toggle('show', GS.state==='play');
@@ -4876,20 +4718,14 @@ window.startGame = function(li) {
     }, 15000);
   }
   
-  // Wave system: Spawn vehicle pickups every 20-35 seconds
-  function scheduleVehicleWave() {
-    const delay = 20000 + Math.random() * 15000;
-    setTimeout(() => {
-      if(GS.state === 'play') {
-        const types = Object.keys(VEHICLES);
-        const t = types[Math.floor(Math.random()*types.length)];
-        const lane = Math.floor(Math.random()*3);
-        spawnVehiclePickup(playerGroup.position.z + 40, lane, t);
-        scheduleVehicleWave(); // Schedule next wave
-      }
-    }, delay);
-  }
-  setTimeout(scheduleVehicleWave, 12000); // First spawn after 12s
+  // Spawn vehicle pickup after 12s
+  setTimeout(() => {
+    if(GS.state === 'play') {
+      const types = Object.keys(VEHICLES);
+      const t = types[Math.floor(Math.random()*types.length)];
+      spawnVehiclePickup(playerGroup.position.z + 40, 1, t);
+    }
+  }, 12000);
   
   updateWeeklyBanner();
 };
@@ -4907,7 +4743,9 @@ window.updateEvents = function(dt) {
   updateWeeklyBanner();
   
   // Slow-mo effect on game speed
-  // Slow-mo is now handled globally via dt multiplier in main loop
+  if(GS.slowmoActive) {
+    // Already handled by multiplying dt — done via patching speed
+  }
 };
 
 // Patch trySpawnEvent
@@ -4920,10 +4758,10 @@ window.updateChaser = updateChaserEnhanced;
 document.addEventListener('keydown', e => {
   if(GS.state !== 'play') return;
   if(e.key==='q'||e.key==='Q') useAbility('dash');
-  if(e.key==='w'||e.key==='W') useAbility('ghost');
-  if(e.key==='e'||e.key==='E') useAbility('slowmo');
-  if(e.key==='r'||e.key==='R') useAbility('dbljump');
-  if(e.key==='t'||e.key==='T') useAbility('shield2');
+  if(e.key==='f'||e.key==='F') useAbility('ghost');
+  if(e.key==='r'||e.key==='R') useAbility('slowmo');
+  if(e.key==='t'||e.key==='T') useAbility('dbljump');
+  if(e.key==='y'||e.key==='Y') useAbility('shield2');
 });
 
 // Touch: double tap for ability
@@ -5033,11 +4871,14 @@ window.getJumpBoost = function() {
 // On obstacle cleared, damage boss
 const _origCheckCol = checkCol;
 window.checkCol = function() {
-  if(GS.ghostMode) return; // Ghost mode: skip all collision checks
   const prevStars = GS.stars;
   _origCheckCol();
   if(GS.stars > prevStars && GS.bossActive) {
     damageBoss(30); // Each dodged obstacle = 30 boss damage
+  }
+  // Ghost mode skips obstacle damage
+  if(GS.ghostMode) {
+    // Don't die from obstacles
   }
 };
 
@@ -5079,27 +4920,7 @@ window.applyLang = function() {
 /* Check daily login reward on load */
 setTimeout(checkDailyLoginReward, 2000);
 
-/* ═══════════════════════════════════════════════════════════
-   v3.0 ULTRA — UNIFIED SYSTEM INITIALIZATION
-   All patches and enhancements registered here
-═══════════════════════════════════════════════════════════ */
-function initUltraSystems(){
-  // Register all system patches in one place
-  window.trySpawnEvent = trySpawnEventEnhanced;
-  window.updateChaser = updateChaserEnhanced;
-  window.getCoinMult = getCoinMult;
-  window.getJumpBoost = getJumpBoost;
-  window.checkCol = checkCol;
-  window.buildShopGrid = buildShopGrid;
-  window.snd = snd;
-  window.applyLang = applyLang;
-  window.startGame = startGame;
-  window.updateEvents = updateEvents;
-  console.log('🎮 Aura Escape v3.0 ULTRA — Systems initialized');
-}
-initUltraSystems();
-
-// 🎮 Aura's Escape v3.0 ULTRA — All Systems Loaded
+// 🎮 Aura's Escape v3.0 ULTRA — Advanced Systems Loaded
 bindSettingsExtras();
 applyLang();
 syncToggles();
@@ -5107,21 +4928,9 @@ buildAhead(0);
 showLoadingScreen();
 showScr('scrStart');
 updateStreakDisplay();
-initA11y();
 lastT=performance.now();
 requestAnimationFrame(loop);
 </script>
 
-
-<!-- CUSTOM CONFIRM MODAL -->
-<div id="customConfirm" class="off" style="position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
-  <div style="background:#1e1b4b;border-radius:16px;padding:24px;max-width:320px;text-align:center">
-    <p id="ccMsg" style="color:#fff;font-size:1rem;margin-bottom:16px"></p>
-    <div style="display:flex;gap:8px">
-      <button id="ccYes" style="flex:1;padding:10px;border:none;border-radius:8px;background:linear-gradient(135deg,#f97316,#fbbf24);color:#fff;font-weight:700;cursor:pointer">✓</button>
-      <button id="ccNo" style="flex:1;padding:10px;border:none;border-radius:8px;background:#374151;color:#fff;font-weight:700;cursor:pointer">✗</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
