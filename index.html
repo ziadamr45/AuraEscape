@@ -918,7 +918,7 @@ body.a11y-colorblind .hc-val{filter:none}
 <div id="missionHud"><div class="mh-title">مهمة اليوم</div><div class="mh-task" id="mhTask">—</div><div class="mh-bar-bg"><div class="mh-bar" id="mhBar"></div></div><div class="mh-pct" id="mhPct">0%</div></div>
 
 <!-- STREAK DISPLAY -->
-<div id="streakDisplay" id="streakDisp"></div>
+<div id="streakDisplay"></div>
 
 <!-- HUD -->
 <div id="hud">
@@ -1547,6 +1547,10 @@ function saveCFG(){
   S.s('unlocked',CFG.unlocked);S.s('best',CFG.best);S.s('stars',CFG.stars);
   S.s('totalCoins',CFG.totalCoins||0);S.s('levelsDone',CFG.levelsDone||0);
   S.s('totalRuns',CFG.totalRuns||0);S.s('bestCombo',CFG.bestCombo||0);
+  S.s('shopOwned',CFG.shopOwned||[]);S.s('shopEquipped',CFG.shopEquipped||{});
+  S.s('tutDone',CFG.tutDone||false);S.s('dailyDone',CFG.dailyDone||0);
+  S.s('dailyStreak',CFG.dailyStreak||0);S.s('dailyLast',CFG.dailyLast||0);
+  S.s('achievements',CFG.achievements||[]);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2781,7 +2785,7 @@ function vib(p){if(CFG.vib&&navigator.vibrate)navigator.vibrate(p);}
 /* ═══════════════════════════════════════════════════════════
    UI HELPERS
 ═══════════════════════════════════════════════════════════ */
-const SCRIDS=['scrStart','scrLvl','scrSet','scrPause','scrDeath','scrDone','scrZoneGate','scrShop','scrLeader','scrDaily'];
+const SCRIDS=['scrStart','scrLvl','scrSet','scrPause','scrDeath','scrDone','scrZoneGate','scrShop','scrLeader','scrDaily','scrPass'];
 function showScr(id){
   SCRIDS.forEach(s=>{
     const el=document.getElementById(s);
@@ -2982,7 +2986,7 @@ function loop(ts){
   const dt=Math.min((ts-lastT)*.001,.05);lastT=ts;
 
   if(GS.state==='play'){
-    GS.frame++;GS.elapsed+=dt;GS.totalDist+=GS.speed*dt;
+    GS.frame++;GS.elapsed+=dt;
 
     // Speed ramp — faster over time
     const rampRate=.8+GS.curLevel*.015;
@@ -3609,7 +3613,7 @@ function triggerSlowMo(duration=1.2){
   },duration*1000);
 }
 function updateSlowMo(dt){
-  if(!_slowMoActive)return dt*0.28; // 28% speed = dramatic slow
+  if(_slowMoActive) return dt*0.28; // 28% speed = dramatic slow when active
   return dt;
 }
 
@@ -4263,10 +4267,10 @@ function defeatBoss() {
    5. ADVANCED CHASE SYSTEM (Police Dogs, Drones, Cars)
 ═══════════════════════════════════════════════════════════ */
 const CHASER_TYPES = {
-  officer: { icon:'👮', label:'Officer',   labelAr:'ضابط',      speed:0.4, catchDist:1.5,  color:0x1d4ed8 },
-  dog:     { icon:'🐕', label:'K9 Dog',    labelAr:'كلب بوليسي', speed:0.65, catchDist:1.0, color:0xd97706 },
-  drone:   { icon:'🚁', label:'Drone',     labelAr:'درون',       speed:0.5, catchDist:2.0,  color:0x6b7280 },
-  car:     { icon:'🚔', label:'Police Car',labelAr:'سيارة بوليس', speed:0.3, catchDist:0.5, color:0xdc2626 },
+  officer: { id:'officer', icon:'👮', label:'Officer',   labelAr:'ضابط',      speed:0.4, catchDist:1.5,  color:0x1d4ed8 },
+  dog:     { id:'dog',     icon:'🐕', label:'K9 Dog',    labelAr:'كلب بوليسي', speed:0.65, catchDist:1.0, color:0xd97706 },
+  drone:   { id:'drone',   icon:'🚁', label:'Drone',     labelAr:'درون',       speed:0.5, catchDist:2.0,  color:0x6b7280 },
+  car:     { id:'car',     icon:'🚔', label:'Police Car',labelAr:'سيارة بوليس', speed:0.3, catchDist:0.5, color:0xdc2626 },
 };
 
 function switchChaserType(type) {
@@ -4758,10 +4762,10 @@ window.updateChaser = updateChaserEnhanced;
 document.addEventListener('keydown', e => {
   if(GS.state !== 'play') return;
   if(e.key==='q'||e.key==='Q') useAbility('dash');
-  if(e.key==='f'||e.key==='F') useAbility('ghost');
-  if(e.key==='r'||e.key==='R') useAbility('slowmo');
-  if(e.key==='t'||e.key==='T') useAbility('dbljump');
-  if(e.key==='y'||e.key==='Y') useAbility('shield2');
+  if(e.key==='w'||e.key==='W') useAbility('ghost');
+  if(e.key==='e'||e.key==='E') useAbility('slowmo');
+  if(e.key==='r'||e.key==='R') useAbility('dbljump');
+  if(e.key==='t'||e.key==='T') useAbility('shield2');
 });
 
 // Touch: double tap for ability
@@ -4871,14 +4875,11 @@ window.getJumpBoost = function() {
 // On obstacle cleared, damage boss
 const _origCheckCol = checkCol;
 window.checkCol = function() {
+  if(GS.ghostMode) return; // Ghost mode: skip all collision checks
   const prevStars = GS.stars;
   _origCheckCol();
   if(GS.stars > prevStars && GS.bossActive) {
     damageBoss(30); // Each dodged obstacle = 30 boss damage
-  }
-  // Ghost mode skips obstacle damage
-  if(GS.ghostMode) {
-    // Don't die from obstacles
   }
 };
 
