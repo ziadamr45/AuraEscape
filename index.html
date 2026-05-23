@@ -901,6 +901,22 @@ body.a11y-colorblind .hc-val{filter:none}
   <div class="ls-tip" id="lsTip">اسحب يميناً ويساراً للتنقل بين الممرات</div>
 </div>
 
+<!-- Early loader: start progress bar immediately (before Three.js loads) -->
+<script>
+(function(){
+  var bar=document.getElementById('lsBar');
+  var pct=document.getElementById('lsPct');
+  if(!bar||!pct)return;
+  var p=0;
+  window._lsIv=setInterval(function(){
+    p+=Math.random()*6+2;
+    if(p>=82){p=82;clearInterval(window._lsIv);window._lsIv=null;}
+    bar.style.width=p+'%';
+    pct.textContent=Math.floor(p)+'%';
+  },150);
+})();
+</script>
+
 <!-- SLOW MO -->
 <div id="slowmoOverlay"></div>
 <div id="slowmoText">⚡ SLOW MOTION</div>
@@ -1179,7 +1195,8 @@ body.a11y-colorblind .hc-val{filter:none}
 <!-- SETTINGS ENHANCED -->
 
 <!-- Three.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>function _loadThreeFallback(){var s=document.createElement('script');s.src='https://unpkg.com/three@0.128.0/build/three.min.js';s.onerror=function(){var el=document.getElementById('lsPct');if(el){el.textContent='Error loading 3D engine - Please refresh';el.style.color='#ef4444';}if(window._lsIv){clearInterval(window._lsIv);window._lsIv=null;}};document.head.appendChild(s);}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="_loadThreeFallback()"></script>
 
 <!-- STORY MODE SCREEN -->
 <div class="scr off" id="scrStory">
@@ -3733,17 +3750,19 @@ function showLoadingScreen(){
   const bar=document.getElementById('lsBar');
   const pct=document.getElementById('lsPct');
   const tip=document.getElementById('lsTip');
+  // Clear any existing interval from the early loader
+  if(window._lsIv){clearInterval(window._lsIv);window._lsIv=null;}
   const ar=CFG.lang==='ar';
   const tips=ar?LOAD_TIPS_AR:LOAD_TIPS_EN;
   tip.textContent=tips[Math.floor(Math.random()*tips.length)];
   ls.style.display='flex';
-  let p=0;
-  const iv=setInterval(()=>{
-    p+=Math.random()*18+5;
-    if(p>=100){p=100;clearInterval(iv);setTimeout(()=>{ls.style.opacity='0';ls.style.transition='opacity .5s';setTimeout(()=>{ls.style.display='none';},500);},200);}
-    bar.style.width=p+'%';
-    pct.textContent=Math.floor(p)+'%';
-  },80);
+  ls.style.opacity='1';
+  ls.style.transition='';
+  // Complete the progress bar (early loader already started it)
+  bar.style.width='100%';
+  bar.style.transition='width .4s ease';
+  pct.textContent='100%';
+  setTimeout(()=>{ls.style.opacity='0';ls.style.transition='opacity .5s';setTimeout(()=>{ls.style.display='none';bar.style.transition='width .3s ease';},500);},500);
 }
 
 /* ═══════════════════════════════════════════════════════════
