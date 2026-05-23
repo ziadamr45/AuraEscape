@@ -901,19 +901,59 @@ body.a11y-colorblind .hc-val{filter:none}
   <div class="ls-tip" id="lsTip">اسحب يميناً ويساراً للتنقل بين الممرات</div>
 </div>
 
-<!-- Early loader: start progress bar immediately (before Three.js loads) -->
+<!-- Dynamic Three.js Loader — loads async, never blocks the page -->
 <script>
 (function(){
   var bar=document.getElementById('lsBar');
   var pct=document.getElementById('lsPct');
+  var ls=document.getElementById('loadingScreen');
   if(!bar||!pct)return;
   var p=0;
-  window._lsIv=setInterval(function(){
-    p+=Math.random()*6+2;
-    if(p>=82){p=82;clearInterval(window._lsIv);window._lsIv=null;}
+  // Slow progress while loading
+  var slowIv=setInterval(function(){
+    if(p<65) p+=Math.random()*4+1;
     bar.style.width=p+'%';
     pct.textContent=Math.floor(p)+'%';
-  },150);
+  },200);
+
+  function _threeLoaded(){
+    clearInterval(slowIv);
+    p=80;
+    bar.style.width='80%'; pct.textContent='80%';
+    // Execute the game script now that THREE is available
+    var gs=document.getElementById('gameScript');
+    if(gs){
+      var ns=document.createElement('script');
+      ns.textContent=gs.textContent;
+      gs.parentNode.replaceChild(ns,gs);
+    }
+  }
+  function _threeError(msg){
+    clearInterval(slowIv);
+    pct.textContent=msg||'Error loading 3D engine — refresh';
+    pct.style.color='#ef4444';
+  }
+
+  // Try cdnjs first
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  s.onload=_threeLoaded;
+  s.onerror=function(){
+    // Fallback: unpkg
+    var f=document.createElement('script');
+    f.src='https://unpkg.com/three@0.128.0/build/three.min.js';
+    f.onload=_threeLoaded;
+    f.onerror=function(){
+      // Fallback 3: jsdelivr
+      var j=document.createElement('script');
+      j.src='https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';
+      j.onload=_threeLoaded;
+      j.onerror=function(){ _threeError(); };
+      document.head.appendChild(j);
+    };
+    document.head.appendChild(f);
+  };
+  document.head.appendChild(s);
 })();
 </script>
 
@@ -1195,8 +1235,7 @@ body.a11y-colorblind .hc-val{filter:none}
 <!-- SETTINGS ENHANCED -->
 
 <!-- Three.js -->
-<script>function _loadThreeFallback(){var s=document.createElement('script');s.src='https://unpkg.com/three@0.128.0/build/three.min.js';s.onerror=function(){var el=document.getElementById('lsPct');if(el){el.textContent='Error loading 3D engine - Please refresh';el.style.color='#ef4444';}if(window._lsIv){clearInterval(window._lsIv);window._lsIv=null;}};document.head.appendChild(s);}</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="_loadThreeFallback()"></script>
+<!-- Three.js now loaded dynamically by the early loader above -->
 
 <!-- STORY MODE SCREEN -->
 <div class="scr off" id="scrStory">
@@ -1389,7 +1428,7 @@ body.a11y-colorblind .hc-val{filter:none}
 
 
 
-<script>
+<script type="text/plain" id="gameScript">
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════
@@ -3750,15 +3789,10 @@ function showLoadingScreen(){
   const bar=document.getElementById('lsBar');
   const pct=document.getElementById('lsPct');
   const tip=document.getElementById('lsTip');
-  // Clear any existing interval from the early loader
-  if(window._lsIv){clearInterval(window._lsIv);window._lsIv=null;}
   const ar=CFG.lang==='ar';
   const tips=ar?LOAD_TIPS_AR:LOAD_TIPS_EN;
   tip.textContent=tips[Math.floor(Math.random()*tips.length)];
-  ls.style.display='flex';
-  ls.style.opacity='1';
-  ls.style.transition='';
-  // Complete the progress bar (early loader already started it)
+  // Complete progress bar and fade out loading screen
   bar.style.width='100%';
   bar.style.transition='width .4s ease';
   pct.textContent='100%';
