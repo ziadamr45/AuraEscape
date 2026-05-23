@@ -10,6 +10,10 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Canvas](https://img.shields.io/badge/Canvas_API-FF6B6B?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 [![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Online-22c55e?style=flat&logo=vercel&logoColor=white)](https://aura-escape.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=flat&logo=github&logoColor=white)](https://github.com/ziadamr45/AuraEscape)
+
+🔗 **[aura-escape.vercel.app](https://aura-escape.vercel.app/)**
 
 </div>
 
