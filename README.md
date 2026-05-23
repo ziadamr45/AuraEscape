@@ -80,9 +80,9 @@ AuraEscape/
 2. افتح ملف `index.html` في المتصفح مباشرة
 3. أو استخدم أي خادم محلي مثل Live Server
 
-### 📸 لقطات الشاشة
+### 📸 لقطات الشاشة | Screenshots
 
-> سيتم إضافة لقطات الشاشة قريبًا.
+![AuraEscape Screenshot](screenshot.png)
 
 ### 🔮 تحسينات مستقبلية
 
