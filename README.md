@@ -171,7 +171,7 @@ AuraEscape/
 
 ### 📸 Screenshots
 
-> Screenshots will be added soon.
+![AuraEscape Screenshot](screenshot.png)
 
 ### 🔮 Future Improvements
 
