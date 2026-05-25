@@ -204,8 +204,6 @@ AuraEscape/
 
 ---
 
-<div align="center">
-
-Ziad Amr
-
-</div>
+<p align="center">
+  Powered by <a href="https://ziadamrme.vercel.app/">Ziad Amr</a>
+</p>
