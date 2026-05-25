@@ -19,13 +19,11 @@
 
 ---
 
-## 🇸🇦 بالعربية
-
-### 📖 نبذة عن اللعبة
+## 📖 نبذة عن اللعبة
 
 **هروب أورا** هي لعبة عدّاءة لا نهائية مبنية بالكامل بتقنيات الويب الأساسية HTML5 و CSS3 و JavaScript باستخدام Canvas API للرسومات. تتبع اللعبة بطلة اسمها "أورا" التي تهرب عبر عوالم مختلفة مليئة بالعقبات والمطاردات والألغاز. تتميز اللعبة بنظام قصة تفاعلية مع فصول قابلة للفت، متجر شامل لشراء الشخصيات والمركبات والقدرات، تحديات يومية وأسبوعية، نظام باس الموسم، وزعيم لوحة المتصدرين. اللعبة تدعم العربية والإنجليزية بالكامل مع تصميم متجاوب يعمل على جميع الأجهزة.
 
-### ✨ المميزات الرئيسية
+## ✨ المميزات الرئيسية
 
 - 🏃‍♀️ **لعبة عدّاءة لا نهائية** — نظام لعب سلس مع تحكم بالسحب والنقر، 3 حارات، قفز وانزلاق وتغيير الحارة
 - 🎮 **20 منطقة و80+ مرحلة** — مناطق متنوعة بتصاميم وموسيقى مختلفة، كل منطقة بألوان وأجواء فريدة
@@ -47,7 +45,7 @@
 - ♿ **إمكانية الوصول** — خيارات تباين عالي ووضع عمى الألوان
 - ⚙️ **إعدادات شاملة** — صوت، اهتزاز، جودة الرسومات، حساسية السحب
 
-### 🛠️ التقنيات المستخدمة
+## 🛠️ التقنيات المستخدمة
 
 | التقنية | الاستخدام |
 |---------|-----------|
@@ -59,7 +57,7 @@
 | ![Service Worker](https://img.shields.io/badge/Service_Worker-FF9900?style=flat) | التخزين المؤقت والعمل بدون اتصال |
 | ![Font Awesome](https://img.shields.io/badge/Google_Fonts-4285F4?style=flat&logo=googlefonts&logoColor=white) | الخطوط (Tajawal + Nunito) |
 
-### 📁 هيكل المشروع
+## 📁 هيكل المشروع
 
 ```
 AuraEscape/
@@ -71,7 +69,7 @@ AuraEscape/
 └── README.md           # هذا الملف
 ```
 
-### 🚀 طريقة التشغيل
+## 🚀 طريقة التشغيل
 
 1. قم باستنساخ المستودع:
    ```bash
@@ -80,11 +78,11 @@ AuraEscape/
 2. افتح ملف `index.html` في المتصفح مباشرة
 3. أو استخدم أي خادم محلي مثل Live Server
 
-### 📸 لقطات الشاشة | Screenshots
+## 📸 لقطات الشاشة | Screenshots
 
 ![AuraEscape Screenshot](screenshot.png)
 
-### 🔮 تحسينات مستقبلية
+## 🔮 تحسينات مستقبلية
 
 - إضافة المزيد من المناطق والمراحل
 - نظام إنجازات وميداليات
@@ -93,7 +91,7 @@ AuraEscape/
 - دعم لغات إضافية
 - نظام أحداث موسمية
 
-### 👨‍💻 المطور
+## 👨‍💻 المطور
 
 **زياد عمرو (Ziad Amr)**
 
@@ -108,7 +106,10 @@ AuraEscape/
 
 ---
 
-## 🇺🇸 In English
+---
+
+## English
+
 
 ### 📖 About the Game
 
@@ -186,10 +187,16 @@ AuraEscape/
 
 **Ziad Amr**
 
-- 📱 Telegram: [@ziadamr](https://t.me/ziadamr)
-- 📘 Facebook: [ziad7mr](https://www.facebook.com/ziad7mr)
-- 🎥 YouTube: [@alhayat_ala_eltarek](https://youtube.com/@alhayat_ala_eltarek?si=pcsc_31Kcv3Jym14)
 - 🌐 Portfolio: [ziadamrme.vercel.app](https://ziadamrme.vercel.app)
+- 💼 GitHub: [ziadamr45](https://github.com/ziadamr45)
+- 📘 Facebook: [ziad7mr](https://www.facebook.com/ziad7mr)
+- 💬 Telegram: [@ziadamr](https://t.me/ziadamr)
+- 📸 Instagram: [ziadamr455](https://www.instagram.com/ziadamr455/)
+- 🧵 Threads: [@ziadamr455](https://www.threads.com/@ziadamr455)
+- 🐦 X: [@ziad90216](https://x.com/ziad90216)
+- 🎥 YouTube: [@alhayat_ala_eltarek](https://youtube.com/@alhayat_ala_eltarek?si=pcsc_31Kcv3Jym14)
+- 💼 LinkedIn: [ziad-amr](https://www.linkedin.com/in/ziad-amr-44633a411)
+- 📧 Email: ziad90216@gmail.com
 
 ### 📜 License
 
