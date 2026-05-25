@@ -19,11 +19,11 @@
 
 ---
 
-## 📖 نبذة عن اللعبة
+## 📖 نبذة
 
 **هروب أورا** هي لعبة عدّاءة لا نهائية مبنية بالكامل بتقنيات الويب الأساسية HTML5 و CSS3 و JavaScript باستخدام Canvas API للرسومات. تتبع اللعبة بطلة اسمها "أورا" التي تهرب عبر عوالم مختلفة مليئة بالعقبات والمطاردات والألغاز. تتميز اللعبة بنظام قصة تفاعلية مع فصول قابلة للفت، متجر شامل لشراء الشخصيات والمركبات والقدرات، تحديات يومية وأسبوعية، نظام باس الموسم، وزعيم لوحة المتصدرين. اللعبة تدعم العربية والإنجليزية بالكامل مع تصميم متجاوب يعمل على جميع الأجهزة.
 
-## ✨ المميزات الرئيسية
+## ✨ المميزات
 
 - 🏃‍♀️ **لعبة عدّاءة لا نهائية** — نظام لعب سلس مع تحكم بالسحب والنقر، 3 حارات، قفز وانزلاق وتغيير الحارة
 - 🎮 **20 منطقة و80+ مرحلة** — مناطق متنوعة بتصاميم وموسيقى مختلفة، كل منطقة بألوان وأجواء فريدة
@@ -45,7 +45,7 @@
 - ♿ **إمكانية الوصول** — خيارات تباين عالي ووضع عمى الألوان
 - ⚙️ **إعدادات شاملة** — صوت، اهتزاز، جودة الرسومات، حساسية السحب
 
-## 🛠️ التقنيات المستخدمة
+## 🛠️ التقنيات
 
 | التقنية | الاستخدام |
 |---------|-----------|
@@ -69,7 +69,7 @@ AuraEscape/
 └── README.md           # هذا الملف
 ```
 
-## 🚀 طريقة التشغيل
+## 🚀 التشغيل
 
 1. قم باستنساخ المستودع:
    ```bash
@@ -91,7 +91,7 @@ AuraEscape/
 - دعم لغات إضافية
 - نظام أحداث موسمية
 
-## 👨‍💻 المطور
+### 👨‍💻 المطور
 
 **زياد عمرو (Ziad Amr)**
 
@@ -111,11 +111,11 @@ AuraEscape/
 ## English
 
 
-### 📖 About the Game
+### About
 
 **Aura's Escape** is an endless runner game built entirely with core web technologies — HTML5, CSS3, and JavaScript — using the Canvas API for rendering. The game follows a heroine named "Aura" as she escapes through different worlds filled with obstacles, chasers, and puzzles. It features an interactive story system with unlockable chapters, a comprehensive shop for purchasing characters, vehicles, and abilities, daily and weekly challenges, a season pass system, and a leaderboard. The game fully supports Arabic and English with a responsive design that works on all devices.
 
-### ✨ Key Features
+### Features
 
 - 🏃‍♀️ **Endless Runner** — Smooth gameplay with swipe and tap controls, 3 lanes, jump, slide, and lane switching
 - 🎮 **20 Zones & 80+ Levels** — Diverse zones with unique designs and music, each zone with its own colors and atmosphere
@@ -137,7 +137,7 @@ AuraEscape/
 - ♿ **Accessibility** — High contrast and colorblind mode options
 - ⚙️ **Comprehensive Settings** — Sound, vibration, graphics quality, swipe sensitivity
 
-### 🛠️ Technologies Used
+### Tech Stack
 
 | Technology | Purpose |
 |------------|---------|
@@ -161,7 +161,7 @@ AuraEscape/
 └── README.md           # This file
 ```
 
-### 🚀 How to Run
+### Getting Started
 
 1. Clone the repository:
    ```bash
