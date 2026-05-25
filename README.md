@@ -91,20 +91,32 @@ AuraEscape/
 - دعم لغات إضافية
 - نظام أحداث موسمية
 
-### 👨‍💻 المطور
-
-**زياد عمرو (Ziad Amr)**
-
-- 📱 Telegram: [@ziadamr](https://t.me/ziadamr)
-- 📘 Facebook: [ziad7mr](https://www.facebook.com/ziad7mr)
-- 🎥 YouTube: [@alhayat_ala_eltarek](https://youtube.com/@alhayat_ala_eltarek?si=pcsc_31Kcv3Jym14)
-- 🌐 الموقع الشخصي: [ziadamrme.vercel.app](https://ziadamrme.vercel.app)
-
 ### 📜 الرخصة
 
 ⚠️ رخصة عرض المصدر — هذا المشروع متاح **للعرض والاطلاع فقط**. لا يمكن نسخ الكود أو إعادة إنتاجه أو استخدامه في مشاريع أخرى.
 
 ---
+
+### 👨‍💻 المطور
+
+**زياد عمرو (Ziad Amr)**
+
+- 🌐 الموقع الشخصي: [ziadamrme.vercel.app](https://ziadamrme.vercel.app)
+- 💼 GitHub: [ziadamr45](https://github.com/ziadamr45)
+- 📘 Facebook: [ziad7mr](https://www.facebook.com/ziad7mr)
+- 💬 Telegram: [@ziadamr](https://t.me/ziadamr)
+- 📸 Instagram: [ziadamr455](https://www.instagram.com/ziadamr455/)
+- 🧵 Threads: [@ziadamr455](https://www.threads.com/@ziadamr455)
+- 🐦 X: [@ziad90216](https://x.com/ziad90216)
+- 🎥 YouTube: [@alhayat_ala_eltarek](https://youtube.com/@alhayat_ala_eltarek?si=pcsc_31Kcv3Jym14)
+- 💼 LinkedIn: [ziad-amr](https://www.linkedin.com/in/ziad-amr-44633a411)
+- 📧 Email: ziad90216@gmail.com
+
+---
+
+<p align="center">
+  مدعوم بواسطة <a href="https://ziadamrme.vercel.app/">زياد عمرو</a>
+</p>
 
 ---
 
@@ -183,6 +195,12 @@ AuraEscape/
 - Additional language support
 - Seasonal events system
 
+### 📜 License
+
+⚠️ Source Available License — This project is available for **viewing and reference only**. The code cannot be copied, reproduced, or used in other projects.
+
+---
+
 ### 👨‍💻 Developer
 
 **Ziad Amr**
@@ -197,10 +215,6 @@ AuraEscape/
 - 🎥 YouTube: [@alhayat_ala_eltarek](https://youtube.com/@alhayat_ala_eltarek?si=pcsc_31Kcv3Jym14)
 - 💼 LinkedIn: [ziad-amr](https://www.linkedin.com/in/ziad-amr-44633a411)
 - 📧 Email: ziad90216@gmail.com
-
-### 📜 License
-
-⚠️ Source Available License — This project is available for **viewing and reference only**. The code cannot be copied, reproduced, or used in other projects.
 
 ---
 
