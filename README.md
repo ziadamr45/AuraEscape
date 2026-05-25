@@ -5,8 +5,8 @@
 **لعبة عدّاءة لا نهائية مبنية بـ HTML5 Canvas مع قصة ومتاجر وتحديات يومية**  
 **Endless runner game built with HTML5 Canvas featuring story mode, shop system & daily challenges**
 
-[![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![CSS](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML5)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS3)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Canvas](https://img.shields.io/badge/Canvas_API-FF6B6B?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 [![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
@@ -62,8 +62,8 @@
 ```
 AuraEscape/
 ├── index.html          # الملف الوحيد - يحتوي على كل شيء
-│   ├── HTML             # بنية الواجهة والشاشات
-│   ├── CSS              # الأنماط والتأثيرات (مضمّن)
+│   ├── HTML5             # بنية الواجهة والشاشات
+│   ├── CSS3              # الأنماط والتأثيرات (مضمّن)
 │   ├── JavaScript       # محرك اللعبة الكامل (مضمّن)
 │   └── Service Worker   # دعم العمل بدون إنترنت (مضمّن)
 └── README.md           # هذا الملف
@@ -166,8 +166,8 @@ AuraEscape/
 ```
 AuraEscape/
 ├── index.html          # Single file — contains everything
-│   ├── HTML             # UI structure and screens
-│   ├── CSS              # Styles and effects (embedded)
+│   ├── HTML5             # UI structure and screens
+│   ├── CSS3              # Styles and effects (embedded)
 │   ├── JavaScript       # Complete game engine (embedded)
 │   └── Service Worker   # Offline support (embedded)
 └── README.md           # This file
